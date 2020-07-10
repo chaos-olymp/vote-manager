@@ -1,0 +1,5 @@
+name: "VoteManager"
+description: "Vote manager plugin"
+main: "de.chaosolymp.votemanager.bungee.BungeePlugin"
+author: "DeepRobin"
+version: "${version}"

@@ -1,0 +1,51 @@
+plugins {
+    id 'org.jetbrains.kotlin.jvm'
+    id 'java'
+    id 'eclipse'
+    id "org.zeroturnaround.gradle.jrebel"
+    id "com.github.johnrengelman.shadow"
+}
+
+compileJava.options.encoding = "UTF-8"
+compileTestJava.options.encoding = "UTF-8"
+
+artifacts {
+    archives shadowJar
+}
+
+group 'de.chaosolymp'
+version rootProject.version
+
+repositories {
+    mavenCentral()
+    maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
+    maven { url 'https://hub.spigotmc.org/nexus/content/repositories/snapshots/' }
+    maven { url 'https://jitpack.io' }
+}
+
+dependencies {
+    implementation "org.jetbrains.kotlin:kotlin-stdlib"
+    compileOnly "org.spigotmc:spigot-api:1.15.2-R0.1-SNAPSHOT"
+    compileOnly "com.github.MilkBowl:VaultAPI:1.7"
+    compile project(":vote-manager-core")
+}
+
+shadowJar {
+    relocate('org.slf4j', "de.chaosolymp.votemanager.lib.slf4j")
+    relocate('com.zaxxer.hikari', "de.chaosolymp.votemanager.lib.hikari")
+    relocate('kotlin', "de.chaosolymp.votemanager.lib.kotlin")
+    relocate('org.intellij.lang.annotations', "de.chaosolymp.votemanager.lib.annotations.intellij")
+    relocate('org.jetbrains.annotations', "de.chaosolymp.votemanager.lib.annotations.jetbrains")
+    version = version
+}
+
+processResources {
+    inputs.property "version", project.version
+    from(sourceSets.main.resources.srcDirs) {
+        include 'plugin.yml'
+        expand 'version': project.version
+    }
+    from(sourceSets.main.resources.srcDirs) {
+        exclude 'plugin.yml'
+    }
+}
