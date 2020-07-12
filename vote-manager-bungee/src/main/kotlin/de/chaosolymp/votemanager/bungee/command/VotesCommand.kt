@@ -28,13 +28,23 @@ class VotesCommand(private val plugin: BungeePlugin) : Command("votes", null, "v
                     }
                 }
             } else if (args.size == 1) {
-                target = this.plugin.proxy.getPlayer(args[0]).uniqueId
-                this.sendVotes(sender, target)
+                val targetPlayer = this.plugin.proxy.getPlayer(args[0])
+                if(targetPlayer != null && targetPlayer.isConnected) {
+                    target = targetPlayer.uniqueId
+                    this.sendVotes(sender, target)
+                } else {
+                    sender?.sendMessage(
+                        this.plugin.messageConfiguration.getMessage(
+                            "error.player-not-found",
+                            emptyArray()
+                        )
+                    )
+                }
             } else {
                 sender?.sendMessage(
                     this.plugin.messageConfiguration.getMessage(
                         "error.syntax",
-                        arrayOf(Replacement("syntax", "/votes"))
+                        arrayOf(Replacement("syntax", "/votes [Name]"))
                     )
                 )
             }
@@ -46,7 +56,7 @@ class VotesCommand(private val plugin: BungeePlugin) : Command("votes", null, "v
             val count = this.plugin.databaseManager.countVotes(target)
             sender?.sendMessage(
                 this.plugin.messageConfiguration.getMessage(
-                    "messages.command.votes.self", arrayOf(
+                    "command.votes.self", arrayOf(
                         Replacement("votes", count)
                     )
                 )

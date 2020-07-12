@@ -1,5 +1,5 @@
 name: "VoteManager"
 description: "Vote manager plugin"
-main: "de.chaosolymp.votemanager.bungee.BungeePlugin"
+main: "de.chaosolymp.votemanager.bukkit.BukkitPlugin"
 author: "DeepRobin"
 version: "${version}"

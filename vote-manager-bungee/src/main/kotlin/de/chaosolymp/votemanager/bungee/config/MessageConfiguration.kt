@@ -12,7 +12,7 @@ class MessageConfiguration(private val config: Configuration) {
         fun getDefaultConfiguration(): Configuration {
             val config = Configuration()
             config.set("variables.prefix", "&8[&e&l!&8] &6&lVote &8» ")
-            config.set("messages.vote", "%prefix% &e{player} &bhat gevotet")
+            config.set("messages.vote.default", "%prefix% &e{player} &bhat gevotet")
             config.set("messages.vote.special", "%prefix% &e{player} &dhat zum &e{votes}. &dMal gevotet")
 
             config.set("messages.command.votes.self", "%prefix% &7Du hast aktuell &6{votes} &7und bist auf Platz &a{rank}")
@@ -21,7 +21,6 @@ class MessageConfiguration(private val config: Configuration) {
             config.set("messages.command.top.element", "%prefix% &8[&e{rank}&8] &a{player} &8» &6{votes} Votes")
             config.set("messages.command.vote-list", "%prefix% &8[&e&l!&8] &6&lVote &8» &eAktuelle Links:\n\n&8[&e1&8] &aMinecraft-Serverliste.eu &8» &6www.pornhub.com\n&8[&e2&8] &aMinecraft-Serverliste.eu &8» &6www.pornhub.com\n&8[&e3&8] &aMinecraft-Serverliste.eu &8» &6www.pornhub.com\n\n")
 
-
             config.set("messages.error.no-permission", "%prefix% &cKeine Rechte")
             config.set("messages.error.no-stats", "%prefix% &cDieser Spieler ist nicht in unseren Voteaufzeichnungen verzeichnet.")
             config.set("messages.error.player-not-found", "%prefix% &cDieser Spieler konnte nicht gefunden werden.")
@@ -29,7 +28,7 @@ class MessageConfiguration(private val config: Configuration) {
             config.set("messages.error.database-error", "%prefix% &cDatenbankfehler")
             config.set("messages.error.syntax", "%prefix% &cMeintest du &o{syntax}&r&c?")
 
-            return config;
+            return config
         }
     }
 

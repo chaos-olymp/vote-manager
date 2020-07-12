@@ -26,6 +26,7 @@ class BungeePlugin : Plugin() {
         this.initMessageConfig()
         this.initDatabaseConfig()
         this.databaseManager = DatabaseManager(this)
+        this.databaseManager.createTable()
         this.proxy.pluginManager.registerListener(this, VoteListener(this))
         this.proxy.pluginManager.registerCommand(this, VoteCommand(this))
         this.proxy.pluginManager.registerCommand(this, VotesCommand(this))

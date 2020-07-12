@@ -30,7 +30,7 @@ class VoteListener(private val plugin: BungeePlugin) : Listener {
             } else {
                 player.sendMessage(
                     this.plugin.messageConfiguration.getMessage(
-                        "vote", arrayOf(
+                        "vote.default", arrayOf(
                             Replacement("player", vote.username),
                             Replacement("votes", count)
                         )
