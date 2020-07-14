@@ -18,28 +18,28 @@ class VoteListener(private val plugin: BungeePlugin) : Listener {
         val count = this.plugin.databaseManager.countVotes(this.plugin.proxy.getPlayer(vote.username).uniqueId) + 1
 
         for (player in this.plugin.proxy.players) {
-            if(count % 50 == 0) {
-                player.sendMessage(
-                    this.plugin.messageConfiguration.getMessage(
-                        "vote.special", arrayOf(
-                            Replacement("player", vote.username),
-                            Replacement("votes", count)
-                        )
-                    )
-                )
+            val key: String = if (count % 50 == 0) {
+                "vote.special"
             } else {
-                player.sendMessage(
-                    this.plugin.messageConfiguration.getMessage(
-                        "vote.default", arrayOf(
-                            Replacement("player", vote.username),
-                            Replacement("votes", count)
-                        )
+                "vote.default"
+            }
+
+            player.sendMessage(
+                this.plugin.messageConfiguration.getMessage(
+                    key, arrayOf(
+                        Replacement("player", vote.username),
+                        Replacement("votes", count)
                     )
                 )
-            }
-            if(player.name.equals(vote.username, true)) {
+            )
+
+            if (player.name.equals(vote.username, true)) {
                 this.plugin.databaseManager.addVote(player.uniqueId, player.name, vote.serviceName)
+                this.plugin.achievementDispatcher.insertOrUpdateVotes(player.uniqueId)
                 this.plugin.tneDispatcher.depositMoney(player, 50.0)
+                player.sendMessage(this.plugin.messageConfiguration.getMessage("vote.reward", arrayOf(
+                    Replacement("amount", 50.0)
+                )))
             }
         }
     }

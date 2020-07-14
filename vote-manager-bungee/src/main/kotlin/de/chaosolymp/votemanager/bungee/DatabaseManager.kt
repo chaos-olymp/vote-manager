@@ -1,10 +1,10 @@
 package de.chaosolymp.votemanager.bungee
 
+import de.chaosolymp.votemanager.bungee.model.TopVoter
 import de.chaosolymp.votemanager.core.UUIDUtils
 import java.sql.Timestamp
 import java.time.Instant
 import java.util.*
-import kotlin.io.use
 
 class DatabaseManager(plugin: BungeePlugin) {
 
@@ -44,14 +44,27 @@ class DatabaseManager(plugin: BungeePlugin) {
         }
     }
 
+    fun getVoteRank(uuid: UUID): Int {
+        this.dataSource.connection.use {
+            val statement = it.prepareStatement("SELECT RANK() OVER (ORDER BY COUNT(*)) ranking FROM `votes` WHERE uuid = ? AND votestamp > now() - interval 30 day")
+            statement.setBytes(1, UUIDUtils.getBytesFromUUID(uuid))
+            val rs = statement.executeQuery()
+            return if (rs.next()) {
+                rs.getInt(1)
+            } else {
+                0
+            }
+        }
+    }
+
     fun getTopVoters(count: Int): List<TopVoter> {
         this.dataSource.connection.use {
             val statement =
                 it.prepareStatement("SELECT uuid, username, COUNT(votestamp) as vote_count from `votes` where votestamp > now() - interval 30 day GROUP BY uuid, username ORDER BY vote_count LIMIT ?")
             statement.setInt(1, count)
             val rs = statement.executeQuery()
-            val list = mutableListOf<TopVoter>();
-            if (rs.next()) {
+            val list = mutableListOf<TopVoter>()
+            while (rs.next()) {
                 val uuid = UUIDUtils.getUUIDFromBytes(rs.getBytes("uuid"))
                 val username = rs.getString("username")
                 val voteCount = rs.getInt("vote_count")

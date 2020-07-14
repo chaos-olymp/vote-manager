@@ -4,14 +4,10 @@ import com.google.common.io.ByteArrayDataInput
 import com.google.common.io.ByteStreams
 import de.chaosolymp.votemanager.core.UUIDUtils
 import net.milkbowl.vault.economy.Economy
+import org.bukkit.OfflinePlayer
 import org.bukkit.entity.Player
 import org.bukkit.plugin.java.JavaPlugin
 import org.bukkit.plugin.messaging.PluginMessageListener
-import sun.security.krb5.Confounder.bytes
-
-
-
-
 
 class BukkitPlugin: JavaPlugin(), PluginMessageListener {
 
@@ -47,16 +43,17 @@ class BukkitPlugin: JavaPlugin(), PluginMessageListener {
             val input: ByteArrayDataInput = ByteStreams.newDataInput(message)
             val subChannel: String = input.readUTF()
             if (subChannel.equals("vote:deposit", ignoreCase = true)) {
-                val amount: Double = input.readDouble()
                 val uuidArray = ByteArray(16)
                 input.readFully(uuidArray)
                 val uuid = UUIDUtils.getUUIDFromBytes(uuidArray)
+                val amount: Double = input.readDouble()
                 val target = this.server.getOfflinePlayer(uuid)
-                this.economy.depositPlayer(target, amount)
-                if(target.isOnline && target is Player) {
-                    target.sendMessage("§8[§e§l!§8] §6§lVote§r §8» §aDu hast für dein Vote §e$amount Lumen §aerhalten")
-                }
+                this.depositMoney(target, amount)
             }
         }
+    }
+
+    private fun depositMoney(target: OfflinePlayer, amount: Double) {
+        this.server.dispatchCommand(this.server.consoleSender, "money give ${target.name} $amount")
     }
 }

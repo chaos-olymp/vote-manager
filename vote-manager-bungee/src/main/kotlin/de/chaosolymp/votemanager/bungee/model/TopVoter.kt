@@ -1,4 +1,4 @@
-package de.chaosolymp.votemanager.bungee
+package de.chaosolymp.votemanager.bungee.model
 
 import java.util.*
 
