@@ -11,13 +11,11 @@ class TopVotersCommand(private val plugin: BungeePlugin) : Command("topvoters", 
         val topVoters = this.plugin.databaseManager.getTopVoters(10)
 
         sender?.sendMessage(this.plugin.messageConfiguration.getMessage("command.top.heading", emptyArray()))
-        var i = 0
-        for(top in topVoters) {
-            i++
+        topVoters.forEach {
             sender?.sendMessage(this.plugin.messageConfiguration.getMessage("command.top.element", arrayOf(
-                Replacement("rank", i),
-                Replacement("player", top.username),
-                Replacement("votes", top.count)
+                Replacement("rank", it.rank),
+                Replacement("player", it.username),
+                Replacement("votes", it.count)
             )))
         }
 

@@ -28,8 +28,7 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
     //implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.7'
     implementation project(":vote-manager-core")
-    compileOnly group: 'net.md-5', name: 'bungeecord-api', version: '1.14-SNAPSHOT'
-    //compile group: 'com.okkero.skedule', name: 'skedule', version: '1.2.6'
+    compileOnly group: 'net.md-5', name: 'bungeecord-api', version: '1.16-R0.2'
     compile group: "com.zaxxer", name: "HikariCP", version: "3.4.5"
     compile project(":vote-manager-core")
     compileOnly "com.vexsoftware:nuvotifier-universal:2.3.3"
