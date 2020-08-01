@@ -1,7 +1,6 @@
 package de.chaosolymp.votemanager.bungee.listener
 
 import com.google.gson.Gson
-import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import com.vexsoftware.votifier.bungee.events.VotifierEvent
 import com.vexsoftware.votifier.model.Vote
@@ -14,6 +13,7 @@ import java.io.InputStreamReader
 import java.net.HttpURLConnection
 import java.net.URL
 import java.util.*
+
 
 class VoteListener(private val plugin: BungeePlugin) : Listener {
 
@@ -70,9 +70,19 @@ class VoteListener(private val plugin: BungeePlugin) : Listener {
         if(connection.responseCode == 200) {
             val gson = Gson()
             val obj = gson.fromJson(InputStreamReader(connection.inputStream), JsonObject::class.java)
-            return Optional.of(UUID.fromString(obj.get("id").asString))
+            return Optional.of(parseUuid(obj.get("id").asString))
         }
         return Optional.empty()
     }
+
+    private fun parseUuid(string: String): UUID {
+        val buf = StringBuffer(string)
+        buf.insert(20, '-')
+        buf.insert(16, '-')
+        buf.insert(12, '-')
+        buf.insert(8, '-')
+        return UUID.fromString(buf.toString())
+    }
+
 
 }
