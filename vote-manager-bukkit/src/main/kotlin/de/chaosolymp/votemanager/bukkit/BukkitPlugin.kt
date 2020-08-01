@@ -16,7 +16,7 @@ class BukkitPlugin: JavaPlugin(), PluginMessageListener {
     override fun onEnable() {
         val startTime = System.currentTimeMillis()
         if (!setupEconomy() ) {
-            this.logger.severe("The vote manager plugin needs Vault. - Disabling plugin");
+            this.logger.severe("The vote manager plugin needs Vault.")
             this.server.pluginManager.disablePlugin(this)
             return
         }
@@ -54,6 +54,6 @@ class BukkitPlugin: JavaPlugin(), PluginMessageListener {
     }
 
     private fun depositMoney(target: OfflinePlayer, amount: Double) {
-        this.server.dispatchCommand(this.server.consoleSender, "money give ${target.name} $amount")
+        this.economy.depositPlayer(target, amount)
     }
 }

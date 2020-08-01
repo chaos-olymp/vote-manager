@@ -33,7 +33,6 @@ class DatabaseManager(plugin: BungeePlugin) {
 
     fun countVotes(uuid: UUID): Int {
         this.dataSource.connection.use {
-            // old query: SELECT COUNT(*) from `votes` where uuid = ? AND votestamp > now() - interval 30 day
             val statement =
                 it.prepareStatement("SELECT COUNT(*) from `votes` where uuid = ? AND MONTH(votestamp) = MONTH(now()) AND YEAR(votestamp) = YEAR(now())")
             statement.setBytes(1, UUIDUtils.getBytesFromUUID(uuid))
@@ -48,10 +47,6 @@ class DatabaseManager(plugin: BungeePlugin) {
 
     fun getVoteRank(uuid: UUID): Int {
         this.dataSource.connection.use {
-            // old query: SELECT RANK() OVER (ORDER BY COUNT(*)) ranking FROM `votes` WHERE uuid = ? AND votestamp > now() - interval 30 day
-            // semi-old query: SELECT RANK() OVER (ORDER BY COUNT(*)) ranking FROM `votes` WHERE votestamp > now() - interval 30 day GROUP BY uuid HAVING uuid = ?
-            // not working query (WITH): WITH vote_cnt AS (SELECT uuid, COUNT(*) cnt FROM votes GROUP BY votes.uuid), ranks AS (SELECT uuid, RANK() OVER (ORDER BY cnt DESC) rnk FROM vote_cnt) SELECT rnk FROM ranks WHERE uuid = ? AND votestamp > now() - interval 30 day
-            // old: SELECT rnk FROM (SELECT uuid, RANK() OVER (ORDER BY cnt DESC) rnk FROM (SELECT uuid, COUNT(*) cnt FROM votes WHERE votestamp > now() - interval 30 day GROUP BY votes.uuid) vote_cnt) ranks WHERE uuid = ?
             val statement = it.prepareStatement("SELECT rnk FROM (SELECT uuid, RANK() OVER (ORDER BY cnt DESC) rnk FROM (SELECT uuid, COUNT(*) cnt FROM votes WHERE MONTH(votestamp) = MONTH(now()) AND YEAR(votestamp) = YEAR(now()) GROUP BY votes.uuid) vote_cnt) ranks WHERE uuid = ?")
             statement.setBytes(1, UUIDUtils.getBytesFromUUID(uuid))
             val rs = statement.executeQuery()
@@ -78,17 +73,24 @@ class DatabaseManager(plugin: BungeePlugin) {
 
     fun getTopVoters(count: Int): List<TopVoter> {
         this.dataSource.connection.use {
-            // old: SELECT uuid, username, COUNT(votestamp) as vote_count from `votes` where votestamp > now() - interval 30 day GROUP BY uuid, username ORDER BY vote_count DESC LIMIT ?
             val statement =
                 it.prepareStatement("SELECT uuid, username, COUNT(votestamp) as vote_count from `votes` where MONTH(votestamp) = MONTH(now()) AND YEAR(votestamp) = YEAR(now()) GROUP BY uuid, username ORDER BY vote_count DESC LIMIT ?")
             statement.setInt(1, count)
             val rs = statement.executeQuery()
             val list = mutableListOf<TopVoter>()
+
+            var rank = 1
+            var countBefore: Int = -1
+
             while (rs.next()) {
+                if(countBefore == -1) rank = 1
                 val uuid = UUIDUtils.getUUIDFromBytes(rs.getBytes("uuid"))
                 val username = rs.getString("username")
                 val voteCount = rs.getInt("vote_count")
-                val rank = this.getVoteRank(uuid)
+
+                if(countBefore != voteCount) rank += 1
+                countBefore = voteCount
+
                 list.add(TopVoter(uuid, username, rank, voteCount))
             }
             return list
