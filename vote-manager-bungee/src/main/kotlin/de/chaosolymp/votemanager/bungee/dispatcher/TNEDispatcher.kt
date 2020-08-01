@@ -17,7 +17,7 @@ class TNEDispatcher(private val plugin: BungeePlugin) {
         out.write(UUIDUtils.getBytesFromUUID(uuid))
         out.writeDouble(amount)
 
-        this.plugin.proxy.servers["survival"]?.sendData("BungeeCord", out.toByteArray())
+        this.plugin.proxy.servers["Survival"]?.sendData("BungeeCord", out.toByteArray())
     }
 
 }
