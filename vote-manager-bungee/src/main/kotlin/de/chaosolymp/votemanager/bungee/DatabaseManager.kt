@@ -76,20 +76,16 @@ class DatabaseManager(plugin: BungeePlugin) {
             val statement =
                 it.prepareStatement("SELECT uuid, username, COUNT(votestamp) as vote_count from `votes` where MONTH(votestamp) = MONTH(now()) AND YEAR(votestamp) = YEAR(now()) GROUP BY uuid, username ORDER BY vote_count DESC LIMIT ?")
             statement.setInt(1, count)
+
             val rs = statement.executeQuery()
             val list = mutableListOf<TopVoter>()
 
-            var rank = 1
-            var countBefore: Int = -1
-
             while (rs.next()) {
-                if(countBefore == -1) rank = 1
                 val uuid = UUIDUtils.getUUIDFromBytes(rs.getBytes("uuid"))
                 val username = rs.getString("username")
                 val voteCount = rs.getInt("vote_count")
 
-                if(countBefore != voteCount) rank += 1
-                countBefore = voteCount
+                val rank = this.getVoteRank(uuid)
 
                 list.add(TopVoter(uuid, username, rank, voteCount))
             }

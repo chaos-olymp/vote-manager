@@ -2,4 +2,6 @@ name: "VoteManager"
 description: "Vote manager plugin"
 main: "de.chaosolymp.votemanager.bukkit.BukkitPlugin"
 author: "DeepRobin"
+api-version: "1.16"
 version: "${version}"
+softdepend: ["AdvancedAchievements"]

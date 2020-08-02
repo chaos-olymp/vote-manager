@@ -3,4 +3,4 @@ description: "Vote manager plugin"
 main: "de.chaosolymp.votemanager.bungee.BungeePlugin"
 author: "DeepRobin"
 version: "${version}"
-depends: ["NuVotifier"]
+depends: ["Vault", "NuVotifier"]

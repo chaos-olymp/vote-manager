@@ -17,13 +17,14 @@ import java.util.*
 
 class VoteListener(private val plugin: BungeePlugin) : Listener {
 
+    private val gson: Gson = Gson()
+
     @EventHandler
     fun handleVote(event: VotifierEvent) {
         val vote: Vote = event.vote
         this.plugin.logger.info(String.format("%s has voted on %s(%s)", vote.username, vote.serviceName, vote.address))
 
         this.getUniqueId(vote.username).ifPresent {
-
             val count = this.plugin.databaseManager.countVotes(it) + 1
 
             this.plugin.databaseManager.addVote(it, vote.username, vote.serviceName)
@@ -31,11 +32,7 @@ class VoteListener(private val plugin: BungeePlugin) : Listener {
             this.plugin.tneDispatcher.depositMoney(it, 50.0)
 
             for (player in this.plugin.proxy.players) {
-                val key: String = if (count % 50 == 0) {
-                    "vote.special"
-                } else {
-                    "vote.default"
-                }
+                val key: String = if (count % 50 == 0) "vote.special" else "vote.default"
 
                 player.sendMessage(
                     this.plugin.messageConfiguration.getMessage(
@@ -58,21 +55,17 @@ class VoteListener(private val plugin: BungeePlugin) : Listener {
     }
 
     private fun getUniqueId(username: String): Optional<UUID> {
-        for(onlinePlayer in this.plugin.proxy.players) {
-            if(onlinePlayer.name.equals(username, true)) {
-                return Optional.of(onlinePlayer.uniqueId)
-            }
+        val optional = this.plugin.proxy.players.stream().filter { it.name.equals(username, ignoreCase = true) }.map {it.uniqueId}.findFirst()
+        if(optional.isPresent) {
+            return optional
         }
 
         val url = URL("https://api.mojang.com/users/profiles/minecraft/$username")
+
         val connection = url.openConnection() as HttpURLConnection
         connection.requestMethod = "GET"
-        if(connection.responseCode == 200) {
-            val gson = Gson()
-            val obj = gson.fromJson(InputStreamReader(connection.inputStream), JsonObject::class.java)
-            return Optional.of(parseUuid(obj.get("id").asString))
-        }
-        return Optional.empty()
+
+        return if(connection.responseCode == 200) Optional.of(parseUuid(this.gson.fromJson(InputStreamReader(connection.inputStream), JsonObject::class.java).get("id").asString)) else Optional.empty()
     }
 
     private fun parseUuid(string: String): UUID {

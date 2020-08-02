@@ -52,7 +52,7 @@ class VotesCommand(private val plugin: BungeePlugin) : Command("votes", null, "v
     }
 
     private fun sendVotes(sender: CommandSender?, target: UUID?) {
-        if (target != null) {
+        target?.let {
             val count = this.plugin.databaseManager.countVotes(target)
             val rank = this.plugin.databaseManager.getVoteRank(target)
                 sender?.sendMessage(
@@ -64,8 +64,6 @@ class VotesCommand(private val plugin: BungeePlugin) : Command("votes", null, "v
                     )
                 )
             }
-
-
     }
 }
 

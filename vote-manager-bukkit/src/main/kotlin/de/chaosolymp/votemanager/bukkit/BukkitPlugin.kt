@@ -8,6 +8,8 @@ import org.bukkit.OfflinePlayer
 import org.bukkit.entity.Player
 import org.bukkit.plugin.java.JavaPlugin
 import org.bukkit.plugin.messaging.PluginMessageListener
+import java.util.*
+
 
 class BukkitPlugin: JavaPlugin(), PluginMessageListener {
 
@@ -34,7 +36,7 @@ class BukkitPlugin: JavaPlugin(), PluginMessageListener {
                 Economy::class.java
             )
                 ?: return false
-        this.economy = rsp.provider
+        economy = rsp.provider
         return true
     }
 
@@ -42,13 +44,38 @@ class BukkitPlugin: JavaPlugin(), PluginMessageListener {
         if(channel.equals("BungeeCord", ignoreCase = true) || channel.equals("bungeecord:main", ignoreCase = true)) {
             val input: ByteArrayDataInput = ByteStreams.newDataInput(message)
             val subChannel: String = input.readUTF()
-            if (subChannel.equals("vote:deposit", ignoreCase = true)) {
-                val uuidArray = ByteArray(16)
-                input.readFully(uuidArray)
-                val uuid = UUIDUtils.getUUIDFromBytes(uuidArray)
+            if (subChannel == "vote:deposit") {
+                val uuid: UUID = input.readUUID()
                 val amount: Double = input.readDouble()
                 val target = this.server.getOfflinePlayer(uuid)
                 this.depositMoney(target, amount)
+            } else if(subChannel == "vote:achievements") {
+                val uuid: UUID = input.readUUID()
+                val optional = this.server.onlinePlayers.stream().filter { it.uniqueId == uuid }.findFirst()
+
+                if(optional.isPresent) {
+                    if(this.server.pluginManager.getPlugin("AdvancedAchievements") != null) {
+                        this.server.dispatchCommand(
+                            this.server.consoleSender,
+                            "aach add custom.vote 1 ${optional.get().name}"
+                        )
+                    } else {
+                        this.logger.warning("Got invalid achievement increase request with mode=AdvancedAchievements.")
+                    }
+                } else {
+                    this.logger.warning("Got achievement increase request of offline player.")
+                }
+            } else if(subChannel == "vote:mode") {
+                val output = ByteStreams.newDataOutput()
+
+                val server = input.readUTF()
+                val bool = this.server.pluginManager.getPlugin("AdvancedAchievements") == null
+
+                output.writeUTF("vote:mode")
+                output.writeUTF(server)
+                output.writeBoolean(bool)
+
+                player.sendPluginMessage(this, "BungeeCord", output.toByteArray())
             }
         }
     }
