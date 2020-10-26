@@ -22,6 +22,7 @@ repositories {
 
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+    testImplementation group: 'org.jetbrains.kotlin', name: 'kotlin-test-junit5', version: '1.4.10'
 }
 
 shadowJar {

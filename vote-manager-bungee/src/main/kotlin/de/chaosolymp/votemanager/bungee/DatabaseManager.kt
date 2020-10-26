@@ -96,7 +96,7 @@ class DatabaseManager(plugin: BungeePlugin) {
         }
     }
 
-    fun getTopVoters(count: Int): List<TopVoter> {
+    fun  getTopVoters(count: Int): List<TopVoter> {
         this.dataSource.connection.use {
             val statement =
                 it.prepareStatement("SELECT uuid, username, COUNT(votestamp) as vote_count from `votes` where MONTH(votestamp) = MONTH(now()) AND YEAR(votestamp) = YEAR(now()) GROUP BY uuid, username ORDER BY vote_count DESC LIMIT ?")

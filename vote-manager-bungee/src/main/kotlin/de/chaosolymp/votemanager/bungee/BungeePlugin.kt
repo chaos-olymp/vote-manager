@@ -18,7 +18,6 @@ import java.io.File
 class BungeePlugin : Plugin() {
 
     lateinit var databaseConfig: DatabaseConfiguration
-    lateinit var achievementDatabaseConfig: DatabaseConfiguration
     lateinit var databaseManager: DatabaseManager
     lateinit var messageConfiguration: MessageConfiguration
     lateinit var voteDispatcher: VoteDispatcher

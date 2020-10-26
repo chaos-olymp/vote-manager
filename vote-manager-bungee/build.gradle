@@ -20,6 +20,10 @@ repositories {
     maven { url 'http://nexus.okkero.com/repository/maven-releases/' }
 }
 
+configurations {
+    testImplementation.extendsFrom compileOnly
+}
+
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
     implementation project(":vote-manager-core")
@@ -27,6 +31,7 @@ dependencies {
     implementation project(":vote-manager-core")
     compileOnly "com.vexsoftware:nuvotifier-universal:2.3.3"
     compileOnly group: 'net.md-5', name: 'bungeecord-api', version: '1.16-R0.2'
+    testImplementation group: 'org.jetbrains.kotlin', name: 'kotlin-test-junit5', version: '1.4.10'
 }
 
 
