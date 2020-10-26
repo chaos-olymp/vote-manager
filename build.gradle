@@ -7,7 +7,7 @@ plugins {
 }
 
 group 'de.chaosolymp'
-version '1.8-SNAPSHOT'
+version '1.9-SNAPSHOT'
 
 artifacts {
     archives shadowJar
@@ -15,7 +15,7 @@ artifacts {
 
 shadowJar {
     artifacts {
-        shadow(tasks.shadowJar.archivePath) {
+        shadow(tasks.shadowJar.archiveFile.get()) {
             builtBy shadowJar
         }
     }
@@ -31,6 +31,19 @@ dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.12'
 }
 
+subprojects.each { subproject -> evaluationDependsOn(subproject.path) }
+task allJar(type: Jar, dependsOn: subprojects.build) {
+    archiveBaseName.set('vote-manager-all')
+    subprojects.each { subproject ->
+        from subproject.configurations.archives.allArtifacts.files.collect {
+            zipTree(it)
+        }
+    }
+}
+
+artifacts {
+    archives allJar
+}
 subprojects {
     tasks.withType(JavaCompile) {
         options.encoding = 'UTF-8'

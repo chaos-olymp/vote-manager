@@ -9,10 +9,6 @@ plugins {
 compileJava.options.encoding = "UTF-8"
 compileTestJava.options.encoding = "UTF-8"
 
-artifacts {
-    archives shadowJar
-}
-
 group 'de.chaosolymp'
 version rootProject.version
 
@@ -25,13 +21,18 @@ repositories {
 
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
-    compileOnly "org.spigotmc:spigot-api:1.15.2-R0.1-SNAPSHOT"
+    implementation 'com.github.PyvesB:advanced-achievements:6.6.2'
+    implementation project(":vote-manager-core")
+    compileOnly "org.spigotmc:spigot-api:1.16.3-R0.1-SNAPSHOT"
     compileOnly "com.github.MilkBowl:VaultAPI:1.7"
-    compile project(":vote-manager-core")
 }
 
 shadowJar {
+    project.configurations.implementation.canBeResolved = true
+    configurations = [project.configurations.implementation]
     relocate('org.slf4j', "de.chaosolymp.votemanager.lib.slf4j")
+    relocate('com.hm.achievement', 'de.chaosolymp.votemanager.lib.advanced_achievements')
+    relocate('org.apache.commons', 'de.chaosolymp.votemanager.lib.apache_commons')
     relocate('com.zaxxer.hikari', "de.chaosolymp.votemanager.lib.hikari")
     relocate('kotlin', "de.chaosolymp.votemanager.lib.kotlin")
     relocate('org.intellij.lang.annotations', "de.chaosolymp.votemanager.lib.annotations.intellij")
@@ -48,4 +49,8 @@ processResources {
     from(sourceSets.main.resources.srcDirs) {
         exclude 'plugin.yml'
     }
+}
+
+artifacts {
+    archives shadowJar
 }

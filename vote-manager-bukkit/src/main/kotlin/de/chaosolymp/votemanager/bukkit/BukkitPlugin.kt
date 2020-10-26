@@ -2,6 +2,10 @@ package de.chaosolymp.votemanager.bukkit
 
 import com.google.common.io.ByteArrayDataInput
 import com.google.common.io.ByteStreams
+import com.hm.achievement.api.AdvancedAchievementsAPI
+import com.hm.achievement.api.AdvancedAchievementsAPIFetcher
+import com.hm.achievement.category.MultipleAchievements
+import com.hm.achievement.category.NormalAchievements
 import de.chaosolymp.votemanager.core.UUIDUtils
 import net.milkbowl.vault.economy.Economy
 import org.bukkit.OfflinePlayer
@@ -14,6 +18,7 @@ import java.util.*
 class BukkitPlugin: JavaPlugin(), PluginMessageListener {
 
     lateinit var economy: Economy
+    private var advancedAchievementsAPI: AdvancedAchievementsAPI? = null
 
     override fun onEnable() {
         val startTime = System.currentTimeMillis()
@@ -24,6 +29,9 @@ class BukkitPlugin: JavaPlugin(), PluginMessageListener {
         }
         this.server.messenger.registerOutgoingPluginChannel(this, "BungeeCord")
         this.server.messenger.registerIncomingPluginChannel(this, "BungeeCord", this)
+        AdvancedAchievementsAPIFetcher.fetchInstance().ifPresent {
+            this.advancedAchievementsAPI = it
+        }
         this.logger.info("Plugin warmup finished (Took ${System.currentTimeMillis() - startTime}ms)")
     }
 
@@ -54,28 +62,39 @@ class BukkitPlugin: JavaPlugin(), PluginMessageListener {
                 val optional = this.server.onlinePlayers.stream().filter { it.uniqueId == uuid }.findFirst()
 
                 if(optional.isPresent) {
-                    if(this.server.pluginManager.getPlugin("AdvancedAchievements") != null) {
-                        this.server.dispatchCommand(
-                            this.server.consoleSender,
-                            "aach add custom.vote 1 ${optional.get().name}"
-                        )
-                    } else {
-                        this.logger.warning("Got invalid achievement increase request with mode=AdvancedAchievements.")
-                    }
+                    this.advancedAchievementsAPI?.incrementCategoryForPlayer(MultipleAchievements.CUSTOM, "vote", optional.get(), 1)
                 } else {
                     this.logger.warning("Got achievement increase request of offline player.")
                 }
             } else if(subChannel == "vote:mode") {
-                val output = ByteStreams.newDataOutput()
-
                 val server = input.readUTF()
                 val bool = this.server.pluginManager.getPlugin("AdvancedAchievements") == null
 
-                output.writeUTF("vote:mode")
-                output.writeUTF(server)
-                output.writeBoolean(bool)
+                val output = ByteStreams.newDataOutput(18 + server.length)
+
+                output.writeUTF("vote:mode") // 4 byte + length
+                output.writeUTF(server) // 4 byte + length
+                output.writeBoolean(bool) // 1 byte
 
                 player.sendPluginMessage(this, "BungeeCord", output.toByteArray())
+            } else if(subChannel == "vote:commit") {
+                val uuid: UUID = input.readUUID()
+                val target = this.server.getOfflinePlayer(uuid)
+                val id = input.readInt()
+                val achievementIncrease = input.readInt()
+                val singleBonus = input.readDouble()
+
+                val bonus = achievementIncrease * singleBonus
+                this.advancedAchievementsAPI?.incrementCategoryForPlayer(MultipleAchievements.CUSTOM, "vote", this.server.getPlayer(uuid), 1)
+                this.depositMoney(target, bonus)
+
+                if(id != -1) {
+                    val output = ByteStreams.newDataOutput(27)
+                    output.writeUTF("vote:commit_success") // 4 byte + length
+                    output.writeInt(id) // 4 byte
+
+                    player.sendPluginMessage(this, "BungeeCord", output.toByteArray())
+                }
             }
         }
     }

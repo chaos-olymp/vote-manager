@@ -25,6 +25,8 @@ dependencies {
 }
 
 shadowJar {
+    project.configurations.implementation.canBeResolved = true
+    configurations = [project.configurations.implementation]
     relocate('org.slf4j', "de.chaosolymp.votemanager.lib.slf4j")
     relocate('com.zaxxer.hikari', "de.chaosolymp.votemanager.lib.hikari")
     relocate('kotlin', "de.chaosolymp.votemanager.lib.kotlin")
