@@ -112,7 +112,7 @@ class DatabaseManager(plugin: BungeePlugin) {
 
                 val rank = this.getVoteRank(uuid)
 
-                list.add(TopVoter(uuid, username, rank, voteCount))
+                list.add(TopVoter(uuid, username, voteCount, rank))
             }
             return list
         }
