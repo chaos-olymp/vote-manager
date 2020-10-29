@@ -15,7 +15,7 @@ class DatabaseManager(plugin: BungeePlugin) {
     fun createTable() {
         this.dataSource.connection.use {
             val statement =
-                it.prepareStatement("CREATE TABLE IF NOT EXISTS `votes` (`id` INT NOT NULL AUTO_INCREMENT, `votestamp` TIMESTAMP NOT NULL ON UPDATE CURRENT_TIMESTAMP,`uuid` BINARY(16) NOT NULL,`username` VARCHAR(16) NOT NULL,`vote_page` VARCHAR(32) NOT NULL, `achievement` BOOLEAN, PRIMARY KEY(id))")
+                it.prepareStatement("CREATE TABLE IF NOT EXISTS `votes` (`id` INT NOT NULL AUTO_INCREMENT, `votestamp` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,`uuid` BINARY(16) NOT NULL,`username` VARCHAR(16) NOT NULL,`vote_page` VARCHAR(32) NOT NULL, `achievement` BOOLEAN, PRIMARY KEY(id))")
             statement.execute()
         }
     }
