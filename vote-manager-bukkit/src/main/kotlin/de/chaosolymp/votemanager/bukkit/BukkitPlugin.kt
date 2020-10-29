@@ -80,6 +80,7 @@ class BukkitPlugin: JavaPlugin(), PluginMessageListener {
             } else if(subChannel == "vote:commit") {
                 val uuid: UUID = input.readUUID()
                 val target = this.server.getOfflinePlayer(uuid)
+
                 val id = input.readInt()
                 val achievementIncrease = input.readInt()
                 val singleBonus = input.readDouble()

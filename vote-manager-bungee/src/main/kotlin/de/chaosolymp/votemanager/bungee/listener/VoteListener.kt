@@ -21,6 +21,7 @@ class VoteListener(private val plugin: BungeePlugin) : Listener {
             var online = false
             this.plugin.proxy.getPlayer(it)?.let { player ->
                 if(player.server.info.name.equals("Survival", true)) {
+                    // -1 = unknown id
                     this.plugin.voteDispatcher.commitAchievements(player, Pair(-1, 1))
                     online = true
                 }
