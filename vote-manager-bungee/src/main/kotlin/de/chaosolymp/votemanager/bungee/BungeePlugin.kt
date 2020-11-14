@@ -58,7 +58,7 @@ class BungeePlugin : Plugin() {
         }
         if(!config.exists()) {
             if(config.createNewFile()) {
-                val defaultConfig = MessageConfiguration.getDefaultConfiguration();
+                val defaultConfig = MessageConfiguration.getDefaultConfiguration()
                 provider.save(defaultConfig, config)
                 this.messageConfiguration = MessageConfiguration(defaultConfig)
                 this.logger.info("Created default configuration file ${config.name}")

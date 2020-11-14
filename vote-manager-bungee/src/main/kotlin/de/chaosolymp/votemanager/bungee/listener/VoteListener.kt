@@ -13,20 +13,20 @@ class VoteListener(private val plugin: BungeePlugin) : Listener {
     @EventHandler
     fun handleVote(event: VotifierEvent) {
         val vote: Vote = event.vote
-        this.plugin.logger.info(String.format("%s has voted on %s(%s)", vote.username, vote.serviceName, vote.address))
+        this.plugin.logger.info("${vote.username} has voted on ${vote.serviceName}(${vote.address})")
 
         this.plugin.uuidResolver.resolve(vote.username)?.let {
             val count = this.plugin.databaseManager.countVotes(it) + 1
-
             var online = false
             this.plugin.proxy.getPlayer(it)?.let { player ->
-                if(player.server.info.name.equals("Survival", true)) {
-                    // -1 = unknown id
-                    this.plugin.voteDispatcher.commitAchievements(player, Pair(-1, 1))
-                    online = true
-                }
+                // -1 = unknown id
+                this.plugin.voteDispatcher.commitAchievements(player, Pair(-1, 1))
+                this.plugin.logger.info("Sent achievement commit of ${player.name}")
+                online = true
             }
+
             this.plugin.databaseManager.addVote(it, vote.username, vote.serviceName, online)
+            this.plugin.logger.info("Added vote to database")
 
             for (player in this.plugin.proxy.players) {
                 val key: String = if (count % 50 == 0) "vote.special" else "vote.default"

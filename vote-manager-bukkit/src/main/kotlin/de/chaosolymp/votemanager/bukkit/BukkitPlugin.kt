@@ -85,9 +85,15 @@ class BukkitPlugin: JavaPlugin(), PluginMessageListener {
                 val achievementIncrease = input.readInt()
                 val singleBonus = input.readDouble()
 
+                this.logger.info("Got commit #$id by $uuid")
+
                 val bonus = achievementIncrease * singleBonus
-                this.advancedAchievementsAPI?.incrementCategoryForPlayer(MultipleAchievements.CUSTOM, "vote", this.server.getPlayer(uuid), 1)
+                this.advancedAchievementsAPI?.let {
+                    it.incrementCategoryForPlayer(MultipleAchievements.CUSTOM, "vote", this.server.getPlayer(uuid), 1)
+                    this.logger.info("Increment achievement for commit #$id")
+                }
                 this.depositMoney(target, bonus)
+                this.logger.info("Successfully deposited money for commit #$id (bonus: $bonus)")
 
                 if(id != -1) {
                     val output = ByteStreams.newDataOutput(27)
@@ -95,6 +101,7 @@ class BukkitPlugin: JavaPlugin(), PluginMessageListener {
                     output.writeInt(id) // 4 byte
 
                     player.sendPluginMessage(this, "BungeeCord", output.toByteArray())
+                    this.logger.info("Sent commit-success for commit #$id")
                 }
             }
         }
