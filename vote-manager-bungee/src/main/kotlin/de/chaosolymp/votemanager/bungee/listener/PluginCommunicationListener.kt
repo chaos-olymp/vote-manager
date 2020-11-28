@@ -16,6 +16,7 @@ class PluginCommunicationListener(val plugin: BungeePlugin) : Listener {
                 val id = input.readInt()
                 if(id != -1) {
                     this.plugin.databaseManager.setAchievementCommitted(id, true)
+                    this.plugin.logger.warning("Got commit-success message by ${event.sender.socketAddress}")
                 } else {
                     this.plugin.logger.warning("Received -1 response by ${event.sender.socketAddress}")
                 }

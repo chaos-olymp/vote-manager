@@ -14,13 +14,13 @@ class UUIDResolver(private val plugin: BungeePlugin) {
 
     fun resolve(username: String): UUID? {
         val filteredPlayerList = plugin.proxy.players.filter {
-            it.name.equals(username, true)
+            it.name == username
         }
 
         if(filteredPlayerList.any()) {
             return filteredPlayerList[0].uniqueId
         } else {
-            val key = username.toLowerCase()
+            val key = username
             if (cache.containsKey(key)) {
                 return cache[key]
             } else {
@@ -37,7 +37,7 @@ class UUIDResolver(private val plugin: BungeePlugin) {
     }
 
     private fun getUniqueIdByMojang(username: String): Optional<UUID> {
-        val optional = this.plugin.proxy.players.stream().filter { it.name.equals(username, ignoreCase = true) }.map {it.uniqueId}.findFirst()
+        val optional = this.plugin.proxy.players.stream().filter { it.name == username }.map {it.uniqueId}.findFirst()
         if(optional.isPresent) {
             return optional
         }

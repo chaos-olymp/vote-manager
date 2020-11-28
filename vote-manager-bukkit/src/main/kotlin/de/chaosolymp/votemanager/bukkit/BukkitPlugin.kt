@@ -49,7 +49,7 @@ class BukkitPlugin: JavaPlugin(), PluginMessageListener {
     }
 
     override fun onPluginMessageReceived(channel: String, player: Player, message: ByteArray) {
-        if(channel.equals("BungeeCord", ignoreCase = true) || channel.equals("bungeecord:main", ignoreCase = true)) {
+        if(channel == "BungeeCord" || channel == "bungeecord:main") {
             val input: ByteArrayDataInput = ByteStreams.newDataInput(message)
             val subChannel: String = input.readUTF()
             if (subChannel == "vote:deposit") {
