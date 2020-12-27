@@ -1,3 +1,3 @@
 package de.chaosolymp.votemanager.bungee
 
-val ACHIEVEMENT_SERVER = "Survival"
+const val ACHIEVEMENT_SERVER = "Survival"

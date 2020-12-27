@@ -5,8 +5,7 @@ import com.google.common.io.ByteStreams
 import com.hm.achievement.api.AdvancedAchievementsAPI
 import com.hm.achievement.api.AdvancedAchievementsAPIFetcher
 import com.hm.achievement.category.MultipleAchievements
-import com.hm.achievement.category.NormalAchievements
-import de.chaosolymp.votemanager.core.UUIDUtils
+import de.chaosolymp.votemanager.core.*
 import net.milkbowl.vault.economy.Economy
 import org.bukkit.OfflinePlayer
 import org.bukkit.entity.Player
@@ -48,16 +47,17 @@ class BukkitPlugin: JavaPlugin(), PluginMessageListener {
         return true
     }
 
+    @Suppress("UnstableApiUsage")
     override fun onPluginMessageReceived(channel: String, player: Player, message: ByteArray) {
         if(channel == "BungeeCord" || channel == "bungeecord:main") {
             val input: ByteArrayDataInput = ByteStreams.newDataInput(message)
             val subChannel: String = input.readUTF()
-            if (subChannel == "vote:deposit") {
+            if (subChannel == VOTE_DEPOSIT_CHANNEL) {
                 val uuid: UUID = input.readUUID()
                 val amount: Double = input.readDouble()
                 val target = this.server.getOfflinePlayer(uuid)
                 this.depositMoney(target, amount)
-            } else if(subChannel == "vote:achievements") {
+            } else if(subChannel == VOTE_ACHIEVEMENT_CHANNEL) {
                 val uuid: UUID = input.readUUID()
                 val optional = this.server.onlinePlayers.stream().filter { it.uniqueId == uuid }.findFirst()
 
@@ -66,18 +66,18 @@ class BukkitPlugin: JavaPlugin(), PluginMessageListener {
                 } else {
                     this.logger.warning("Got achievement increase request of offline player.")
                 }
-            } else if(subChannel == "vote:mode") {
+            } else if(subChannel == VOTE_MODE_CHANNEL) {
                 val server = input.readUTF()
                 val bool = this.server.pluginManager.getPlugin("AdvancedAchievements") == null
 
                 val output = ByteStreams.newDataOutput(18 + server.length)
 
-                output.writeUTF("vote:mode") // 4 byte + length
+                output.writeUTF(VOTE_MODE_CHANNEL) // 4 byte + length
                 output.writeUTF(server) // 4 byte + length
                 output.writeBoolean(bool) // 1 byte
 
                 player.sendPluginMessage(this, "BungeeCord", output.toByteArray())
-            } else if(subChannel == "vote:commit") {
+            } else if(subChannel == VOTE_COMMIT_CHANNEL) {
                 val uuid: UUID = input.readUUID()
                 val target = this.server.getOfflinePlayer(uuid)
 
@@ -97,7 +97,7 @@ class BukkitPlugin: JavaPlugin(), PluginMessageListener {
 
                 if(id != -1) {
                     val output = ByteStreams.newDataOutput(27)
-                    output.writeUTF("vote:commit_success") // 4 byte + length
+                    output.writeUTF(VOTE_COMMIT_SUCCESS_CHANNEL) // 4 byte + length
                     output.writeInt(id) // 4 byte
 
                     player.sendPluginMessage(this, "BungeeCord", output.toByteArray())

@@ -20,14 +20,13 @@ class UUIDResolver(private val plugin: BungeePlugin) {
         if(filteredPlayerList.any()) {
             return filteredPlayerList[0].uniqueId
         } else {
-            val key = username
-            if (cache.containsKey(key)) {
-                return cache[key]
+            if (cache.containsKey(username)) {
+                return cache[username]
             } else {
                 val res = this.getUniqueIdByMojang(username)
                 if (res.isPresent) {
                     val uuid = res.get()
-                    cache[key] = uuid
+                    cache[username] = uuid
                     return uuid
                 }
             }
