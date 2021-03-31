@@ -2,18 +2,22 @@ package de.chaosolymp.votemanager.bukkit
 
 import com.google.common.io.ByteArrayDataInput
 import com.google.common.io.ByteStreams
-import de.chaosolymp.votemanager.core.UUIDUtils
 import net.milkbowl.vault.economy.Economy
 import org.bukkit.OfflinePlayer
+import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.entity.Player
 import org.bukkit.plugin.java.JavaPlugin
 import org.bukkit.plugin.messaging.PluginMessageListener
+import java.io.File
 import java.util.*
+import org.bukkit.configuration.file.FileConfiguration
+
+
 
 
 class BukkitPlugin: JavaPlugin(), PluginMessageListener {
 
-    lateinit var economy: Economy
+    private lateinit var economy: Economy
 
     override fun onEnable() {
         val startTime = System.currentTimeMillis()
@@ -22,6 +26,11 @@ class BukkitPlugin: JavaPlugin(), PluginMessageListener {
             this.server.pluginManager.disablePlugin(this)
             return
         }
+
+        config.addDefault("command", "token give {player} votebox")
+        config.options().copyDefaults(true)
+        saveConfig()
+
         this.server.messenger.registerOutgoingPluginChannel(this, "BungeeCord")
         this.server.messenger.registerIncomingPluginChannel(this, "BungeeCord", this)
         this.logger.info("Plugin warmup finished (Took ${System.currentTimeMillis() - startTime}ms)")
@@ -54,6 +63,7 @@ class BukkitPlugin: JavaPlugin(), PluginMessageListener {
                 val optional = this.server.onlinePlayers.stream().filter { it.uniqueId == uuid }.findFirst()
 
                 if(optional.isPresent) {
+                    this.server.dispatchCommand(this.server.consoleSender, config.getString("command")!!.replace("{player}", optional.get().name))
                     if(this.server.pluginManager.getPlugin("AdvancedAchievements") != null) {
                         this.server.dispatchCommand(
                             this.server.consoleSender,

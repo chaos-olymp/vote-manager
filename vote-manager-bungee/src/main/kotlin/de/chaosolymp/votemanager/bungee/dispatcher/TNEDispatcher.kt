@@ -11,13 +11,14 @@ import java.util.*
 class TNEDispatcher(private val plugin: BungeePlugin) {
 
     fun depositMoney(uuid: UUID, amount: Double) {
-        val out: ByteArrayDataOutput = ByteStreams.newDataOutput(36)
+    // No money depositing anymore
+    /*val out: ByteArrayDataOutput = ByteStreams.newDataOutput(36)
 
         out.writeUTF("vote:deposit")
         out.write(UUIDUtils.getBytesFromUUID(uuid))
         out.writeDouble(amount)
 
-        this.plugin.proxy.servers["Survival"]?.sendData("BungeeCord", out.toByteArray())
+        this.plugin.proxy.servers["Survival"]?.sendData("BungeeCord", out.toByteArray())*/
     }
 
 }

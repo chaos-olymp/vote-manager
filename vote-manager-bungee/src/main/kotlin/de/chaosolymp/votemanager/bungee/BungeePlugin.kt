@@ -22,6 +22,7 @@ class BungeePlugin : Plugin() {
     lateinit var databaseManager: DatabaseManager
     lateinit var messageConfiguration: MessageConfiguration
     lateinit var achievementDispatcher: AchievementDispatcher
+    lateinit var actionCommand: String
 
     override fun onEnable() {
         val startTime = System.currentTimeMillis()
@@ -51,7 +52,7 @@ class BungeePlugin : Plugin() {
         }
         if(!config.exists()) {
             if(config.createNewFile()) {
-                val defaultConfig = MessageConfiguration.getDefaultConfiguration();
+                val defaultConfig = MessageConfiguration.getDefaultConfiguration()
                 provider.save(defaultConfig, config)
                 this.messageConfiguration = MessageConfiguration(defaultConfig)
                 this.logger.info("Created default configuration file ${config.name}")
