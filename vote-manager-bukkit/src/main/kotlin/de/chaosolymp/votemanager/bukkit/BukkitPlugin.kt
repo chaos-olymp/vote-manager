@@ -51,13 +51,16 @@ class BukkitPlugin: JavaPlugin(), PluginMessageListener {
                 val uuid: UUID = input.readUUID()
                 val amount: Double = input.readDouble()
                 val target = this.server.getOfflinePlayer(uuid)
+
+                val optional = this.server.onlinePlayers.stream().filter { it.uniqueId == uuid }.findFirst()
+                this.server.dispatchCommand(this.server.consoleSender, "token give ${optional.get().name} votebox")
+
                 this.depositMoney(target, amount)
             } else if(subChannel == "vote:achievements") {
                 val uuid: UUID = input.readUUID()
                 val optional = this.server.onlinePlayers.stream().filter { it.uniqueId == uuid }.findFirst()
 
                 if(optional.isPresent) {
-                    this.server.dispatchCommand(this.server.consoleSender, "token give ${optional.get().name} votebox")
                     //this.server.dispatchCommand(this.server.consoleSender, config.getString("command")!!.replace("{player}", optional.get().name))
                     if(this.server.pluginManager.getPlugin("AdvancedAchievements") != null) {
                         this.server.dispatchCommand(
