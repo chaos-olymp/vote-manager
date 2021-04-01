@@ -21,9 +21,9 @@ class BukkitPlugin: JavaPlugin(), PluginMessageListener {
             return
         }
 
-        config.addDefault("command", "token give {player} votebox")
-        config.options().copyDefaults(true)
-        saveConfig()
+        //config.addDefault("command", "token give {player} votebox")
+        //config.options().copyDefaults(true)
+        //saveConfig()
 
         this.server.messenger.registerOutgoingPluginChannel(this, "BungeeCord")
         this.server.messenger.registerIncomingPluginChannel(this, "BungeeCord", this)
@@ -57,7 +57,8 @@ class BukkitPlugin: JavaPlugin(), PluginMessageListener {
                 val optional = this.server.onlinePlayers.stream().filter { it.uniqueId == uuid }.findFirst()
 
                 if(optional.isPresent) {
-                    this.server.dispatchCommand(this.server.consoleSender, config.getString("command")!!.replace("{player}", optional.get().name))
+                    this.server.dispatchCommand(this.server.consoleSender, "token give ${optional.get().name} votebox")
+                    //this.server.dispatchCommand(this.server.consoleSender, config.getString("command")!!.replace("{player}", optional.get().name))
                     if(this.server.pluginManager.getPlugin("AdvancedAchievements") != null) {
                         this.server.dispatchCommand(
                             this.server.consoleSender,

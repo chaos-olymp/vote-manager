@@ -21,3 +21,9 @@ hvote-manager-bungee/src/main/kotlin/de/chaosolymp/votemanager/bungee/dispatcher
 ^vote-manager-bungee/src/main/kotlin/de/chaosolymp/votemanager/bungee/CommandSenderExtension.kt,3\5\3564ddb533a38206aeb9ac3b1963aaa3794461e5
 Ñ
 Tvote-manager-bukkit/src/main/kotlin/de/chaosolymp/votemanager/bukkit/BukkitPlugin.kt,a\3\a34f84e396c179f7f3597898d60d64b225e97050
+ç
+]vote-manager-bungee/src/main/kotlin/de/chaosolymp/votemanager/bungee/listener/VoteListener.kt,f\6\f601e32daa5ff04ad9061840387da48707237671
+Ü
+Vvote-manager-bungee/src/main/kotlin/de/chaosolymp/votemanager/bungee/model/TopVoter.kt,1\9\19a1331d72d3a9f81fdfe865787c5e3b10b99c2c
+ä
+Zvote-manager-bungee/src/main/kotlin/de/chaosolymp/votemanager/bungee/model/VoteResponse.kt,2\8\281c2a17d1e31cb3b7b2c56aedaf2c840e2e2923
