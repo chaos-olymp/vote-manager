@@ -22,7 +22,6 @@ class BungeePlugin : Plugin() {
     lateinit var databaseManager: DatabaseManager
     lateinit var messageConfiguration: MessageConfiguration
     lateinit var achievementDispatcher: AchievementDispatcher
-    lateinit var actionCommand: String
 
     override fun onEnable() {
         val startTime = System.currentTimeMillis()
