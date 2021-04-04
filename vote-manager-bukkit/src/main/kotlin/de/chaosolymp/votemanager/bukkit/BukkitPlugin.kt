@@ -52,20 +52,26 @@ class BukkitPlugin: JavaPlugin(), PluginMessageListener {
                 val amount: Double = input.readDouble()
                 val target = this.server.getOfflinePlayer(uuid)
 
+                logger.info("Got money depositment request")
                 val optional = this.server.onlinePlayers.stream().filter { it.uniqueId == uuid }.findFirst()
-                this.server.dispatchCommand(this.server.consoleSender, "token give ${optional.get().name} votebox")
+                val command = "token give ${optional.get().name} votebox"
+                logger.info("Command dispatched as console sender: $command")
+                this.server.dispatchCommand(this.server.consoleSender, command)
 
                 this.depositMoney(target, amount)
             } else if(subChannel == "vote:achievements") {
                 val uuid: UUID = input.readUUID()
                 val optional = this.server.onlinePlayers.stream().filter { it.uniqueId == uuid }.findFirst()
+                logger.info("Got achievement request")
 
                 if(optional.isPresent) {
                     //this.server.dispatchCommand(this.server.consoleSender, config.getString("command")!!.replace("{player}", optional.get().name))
                     if(this.server.pluginManager.getPlugin("AdvancedAchievements") != null) {
+                        val command =  "aach add custom.vote 1 ${optional.get().name}"
+                        logger.info("Command dispatched as console sender: $command")
                         this.server.dispatchCommand(
                             this.server.consoleSender,
-                            "aach add custom.vote 1 ${optional.get().name}"
+                            command
                         )
                     } else {
                         this.logger.warning("Got invalid achievement increase request with mode=AdvancedAchievements.")
