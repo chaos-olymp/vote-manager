@@ -21,9 +21,9 @@ class BukkitPlugin: JavaPlugin(), PluginMessageListener {
             return
         }
 
-        //config.addDefault("command", "token give {player} votebox")
-        //config.options().copyDefaults(true)
-        //saveConfig()
+        config.addDefault("command", listOf("token give {player} votebox"))
+        config.options().copyDefaults(true)
+        saveConfig()
 
         this.server.messenger.registerOutgoingPluginChannel(this, "BungeeCord")
         this.server.messenger.registerIncomingPluginChannel(this, "BungeeCord", this)
@@ -56,6 +56,11 @@ class BukkitPlugin: JavaPlugin(), PluginMessageListener {
                 val optional = this.server.onlinePlayers.stream().filter { it.uniqueId == uuid }.findFirst()
                 val command = "token give ${optional.get().name} votebox"
                 logger.info("Command dispatched as console sender: $command")
+                this.server.dispatchCommand(this.server.consoleSender, config.getString("command")!!.replace("{player}", optional.get().name))
+                config.getStringList("command").map { it.replace("{player}", optional.get().name) }.forEach {
+                    this.server.dispatchCommand(this.server.consoleSender, it)
+                }
+
                 this.server.dispatchCommand(this.server.consoleSender, command)
 
                 this.depositMoney(target, amount)
@@ -65,7 +70,6 @@ class BukkitPlugin: JavaPlugin(), PluginMessageListener {
                 logger.info("Got achievement request")
 
                 if(optional.isPresent) {
-                    //this.server.dispatchCommand(this.server.consoleSender, config.getString("command")!!.replace("{player}", optional.get().name))
                     if(this.server.pluginManager.getPlugin("AdvancedAchievements") != null) {
                         val command =  "aach add custom.vote 1 ${optional.get().name}"
                         logger.info("Command dispatched as console sender: $command")

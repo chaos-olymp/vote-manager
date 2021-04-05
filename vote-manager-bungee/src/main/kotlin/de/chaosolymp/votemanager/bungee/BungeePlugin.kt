@@ -13,6 +13,7 @@ import net.md_5.bungee.config.Configuration
 import net.md_5.bungee.config.ConfigurationProvider
 import net.md_5.bungee.config.YamlConfiguration
 import java.io.File
+import kotlin.properties.Delegates
 
 class BungeePlugin : Plugin() {
 
@@ -22,11 +23,13 @@ class BungeePlugin : Plugin() {
     lateinit var databaseManager: DatabaseManager
     lateinit var messageConfiguration: MessageConfiguration
     lateinit var achievementDispatcher: AchievementDispatcher
+    var money by Delegates.notNull<Double>()
 
     override fun onEnable() {
         val startTime = System.currentTimeMillis()
         this.logger.info("Plugin warmup started")
         this.tneDispatcher = TNEDispatcher(this)
+        this.initGeneralConfig()
         this.initMessageConfig()
         this.initDatabaseConfig()
         this.initAchievementDatabaseConfig()
@@ -58,6 +61,34 @@ class BungeePlugin : Plugin() {
             }
         } else {
             this.messageConfiguration = MessageConfiguration(provider.load(config))
+            this.logger.info("Loaded configuration file ${config.name}")
+        }
+    }
+
+    private fun initGeneralConfig() {
+        val config = File(this.dataFolder, "config.yml")
+        val clazz =  YamlConfiguration::class.java
+        val provider = ConfigurationProvider.getProvider(clazz)
+        if(!this.dataFolder.exists()) {
+            this.dataFolder.mkdir()
+            this.logger.info("Created plugin data folder ${dataFolder.name}")
+        }
+        if(!config.exists()) {
+            if(config.createNewFile()) {
+                val defaultConfig = Configuration()
+                val defaultMoney = 50.0
+                defaultConfig.set("money", defaultMoney)
+                provider.save(defaultConfig, config)
+                this.money = defaultMoney
+                this.logger.info("Created default configuration file ${config.name}")
+           }
+        } else {
+            val yamlConfig = provider.load(config)
+            if(yamlConfig.contains("money")) {
+                this.money = yamlConfig.getDouble("money")
+            } else {
+                this.logger.severe("Error whilst loading configuration file")
+            }
             this.logger.info("Loaded configuration file ${config.name}")
         }
     }

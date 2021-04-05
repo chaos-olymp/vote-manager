@@ -29,7 +29,7 @@ class VoteListener(private val plugin: BungeePlugin) : Listener {
 
             this.plugin.databaseManager.addVote(it, vote.username, vote.serviceName)
             this.plugin.achievementDispatcher.insertOrUpdateVotes(it)
-            this.plugin.tneDispatcher.depositMoney(it, 50.0)
+            this.plugin.tneDispatcher.depositMoney(it, plugin.money)
 
             for (player in this.plugin.proxy.players) {
                 val key: String = if (count % 50 == 0) "vote.special" else "vote.default"
