@@ -54,14 +54,10 @@ class BukkitPlugin: JavaPlugin(), PluginMessageListener {
 
                 logger.info("Got money depositment request")
                 val optional = this.server.onlinePlayers.stream().filter { it.uniqueId == uuid }.findFirst()
-                val command = "token give ${optional.get().name} votebox"
-                logger.info("Command dispatched as console sender: $command")
                 this.server.dispatchCommand(this.server.consoleSender, config.getString("command")!!.replace("{player}", optional.get().name))
                 config.getStringList("command").map { it.replace("{player}", optional.get().name) }.forEach {
                     this.server.dispatchCommand(this.server.consoleSender, it)
                 }
-
-                this.server.dispatchCommand(this.server.consoleSender, command)
 
                 this.depositMoney(target, amount)
             } else if(subChannel == "vote:achievements") {
